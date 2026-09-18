@@ -1,0 +1,5 @@
+import {sqliteTable,text,integer,uniqueIndex,index} from 'drizzle-orm/sqlite-core';
+export const workspaces=sqliteTable('workspaces',{owner:text('owner').primaryKey(),createdAt:text('created_at').notNull()});
+export const products=sqliteTable('products',{id:text('id').primaryKey(),owner:text('owner').notNull(),sku:text('sku').notNull(),batch:text('batch').notNull(),payload:text('payload').notNull(),version:integer('version').notNull(),updatedAt:text('updated_at').notNull()},t=>[uniqueIndex('products_owner_sku_batch').on(t.owner,t.sku,t.batch)]);
+export const evidence=sqliteTable('evidence',{id:text('id').primaryKey(),owner:text('owner').notNull(),productId:text('product_id').notNull(),payload:text('payload').notNull(),objectKey:text('object_key')},t=>[index('evidence_owner_product').on(t.owner,t.productId)]);
+export const activity=sqliteTable('activity',{id:text('id').primaryKey(),owner:text('owner').notNull(),message:text('message').notNull(),createdAt:text('created_at').notNull(),snapshot:text('snapshot').notNull()},t=>[index('activity_owner').on(t.owner)]);

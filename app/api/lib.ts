@@ -1,0 +1,11 @@
+import {env} from 'cloudflare:workers';
+import {getChatGPTUser} from '../chatgpt-auth';
+export class HttpError extends Error {constructor(public status:number,message:string){super(message)}}
+export function db(){if(!env.DB)throw new HttpError(503,'Storage is temporarily unavailable. Please retry.');return env.DB}
+export function bucket(){if(!env.BUCKET)throw new HttpError(503,'Document storage is temporarily unavailable. Please retry.');return env.BUCKET}
+export async function identity(){const user=await getChatGPTUser();if(!user)throw new HttpError(401,'Sign in to access your private workspace.');return user}
+export function originCheck(req:Request){const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)throw new HttpError(403,'Cross-origin changes are not allowed.');if(req.headers.get('sec-fetch-site')==='cross-site')throw new HttpError(403,'Cross-site changes are not allowed.')}
+export function json(data:unknown,status=200){return Response.json(data,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}})}
+export function fail(e:unknown){if(e instanceof HttpError)return json({error:e.message},e.status);console.error('Workspace request failed',e instanceof Error?e.message:'Unknown storage error');return json({error:'The request could not be completed. Your input has been preserved; please retry.'},503)}
+export async function limitedBody(req:Request,max:number){if(Number(req.headers.get('content-length'))>max)throw new HttpError(413,'The upload is too large. Maximum file size is 10 MB.');const reader=req.body?.getReader();if(!reader)throw new HttpError(400,'Request body is missing.');const chunks:Uint8Array[]=[];let total=0;while(true){const {value,done}=await reader.read();if(done)break;total+=value.length;if(total>max){await reader.cancel();throw new HttpError(413,'The request is too large.')}chunks.push(value)}const bytes=new Uint8Array(total);let offset=0;for(const c of chunks){bytes.set(c,offset);offset+=c.length}return bytes}
+export async function jsonBody(req:Request){try{return JSON.parse(new TextDecoder().decode(await limitedBody(req,100000)))}catch(e){if(e instanceof HttpError)throw e;throw new HttpError(400,'Invalid JSON request.')}}
