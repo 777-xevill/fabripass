@@ -841,3 +841,34 @@ tbody tr:hover {
   .products-card .progress {display:inline-block;margin-left:8px;}
   .heading-actions {flex-wrap:wrap;}
 }
+
+/* Colourful workspace theme */
+:root{--ink:#151936;--muted:#606983;--green:#4938d1;--lime:#74e6f5;--line:#dce2f2;--bg:#f5f8ff}
+body,.app{background:linear-gradient(180deg,#f4f7ff,#fbfdff);color:var(--ink)}
+::selection{background:#4938d1;color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline-color:#ff675d}
+.sidebar{border-right-color:#28357d;background:linear-gradient(180deg,#101942 0,#202b73 62%,#28458c 100%)}
+.brand-icon{border:0;background:linear-gradient(135deg,#7ee9ff,#b7a6ff);color:#15205a}
+.brand-period{color:#74e6f5}.company{border-color:#6170bd;background:rgba(255,255,255,.09)}.company-avatar,.avatar{background:#ff675d;color:#fff}.nav-label{color:#aab6ef}.nav-item{color:#d8defa}.nav-item:hover{border-color:#6070bd;background:rgba(255,255,255,.08)}.nav-item.active{border-color:#8cecff;background:#edfaff;color:#172158}
+.topbar{border-color:#dce2f2;background:rgba(255,255,255,.88);backdrop-filter:blur(14px)}.breadcrumb,.title-row p,p{color:var(--muted)}
+.demo-pill{border-color:#b6c0e2;background:#efefff;color:#4938d1}.avatar.light{background:#e7e4ff;color:#4938d1}
+.eyebrow,.small-caps{color:#4938d1}h1,h2,h3{color:#151936}
+.primary{border-color:#4938d1;background:linear-gradient(135deg,#4938d1,#7256e7);box-shadow:0 7px 18px rgba(73,56,209,.2)}.primary:hover{border-color:#392bb6;background:linear-gradient(135deg,#392bb6,#6146d2)}
+.secondary{border-color:#c5cce5;color:#1d285b;border-radius:9px}.secondary:hover{border-color:#10b8d8;background:#eefcff}
+.metric,.card{border-color:#dce2f2;border-radius:14px;box-shadow:0 9px 26px rgba(31,42,91,.07)}
+.metric:nth-child(1){border-top:5px solid #4938d1}.metric:nth-child(2){border-top:5px solid #10b8d8}.metric:nth-child(3){border-top:5px solid #ff675d}.metric:nth-child(4){border-top:5px solid #ffc857}
+.metric-title,.metric-title svg,.metric>small{color:#68708b}.metric>strong{color:#151936}
+.search,select{border-color:#c6cde5;border-radius:9px}.search:focus-within{border-color:#4938d1;box-shadow:0 0 0 3px rgba(73,56,209,.12)}
+th{border-color:#dce2f2;background:#efefff;color:#3a4380}td{border-color:#e7eaf5}tbody tr:hover{background:#f1fbff}.product-cell:hover strong{color:#4938d1}
+.product-icon,.tone-1,.tone-2{border:0;border-radius:10px;background:#e8f9fc;color:#007f9b}.tone-1{background:#fff0ee;color:#d94e47}.tone-2{background:#fff6dc;color:#8a6200}
+.progress{background:#e1e5f3}.progress i,.material i{background:linear-gradient(90deg,#4938d1,#10b8d8)}
+.status{border-color:#ccd3e9;background:#f2f4fb;color:#444d76}.status.ready{border-color:#11887e;background:#e8fbf7;color:#0e655f}.status.expired{border-color:#ef9b97;background:#fff0ef;color:#9a333d}
+.readiness-panel{border:0;border-radius:16px;background:linear-gradient(145deg,#1a245f,#4938d1 68%,#147e99);box-shadow:0 16px 36px rgba(38,45,112,.23)}.readiness-panel .eyebrow{color:#8defff}.readiness-panel p,.ring small{color:#e2e5ff}.ring>div{background:#293276}.ring{filter:none}.white-button{border:0;border-radius:9px;background:#fff;color:#2b2a78}.white-button:hover{background:#eafcff}
+.regulation-card{border-color:#f5cf7c;background:linear-gradient(145deg,#fff7dd,#fff)}.text-button,.signin{color:#4938d1}.icon-button{color:#59648b}.icon-button:hover{background:#eef0ff;color:#4938d1}
+.preview-banner,.banner{border-color:#bfeaf2;background:#eafaff;color:#346377}.banner.error{border-color:#f0a7a2;background:#fff0ef;color:#91303a}
+.tabs{border-color:#dce2f2}.tabs button{color:#68708b}.tabs button:hover,.tabs button.active{color:#4938d1}.tabs button.active{border-color:#4938d1}
+.vertical-journey>div>span{background:linear-gradient(135deg,#4938d1,#10b8d8);color:#fff}.checklist>div.done{color:#128177}.file-icon{border:0;border-radius:10px;background:#e7faff;color:#0088a3}.activity svg{color:#10a99f}
+.passport-mini{border-color:#d8d5f2;border-radius:14px;background:linear-gradient(155deg,#efedff,#e7faff)}.passport-mini>svg{color:#4938d1}.regulatory-hero{border:0;border-radius:16px;background:linear-gradient(135deg,#111a45,#4938d1 68%,#007f9c)}.regulatory-hero>svg,.regulatory-hero .eyebrow{color:#83efff}.regulatory-hero p{color:#e2e6ff}
+.editor-dialog{border-color:#c7cde4;border-radius:16px;box-shadow:0 28px 80px rgba(18,25,69,.3)}.editor-dialog::backdrop{background:rgba(16,25,66,.68)}.upload-zone{border-color:#82d9e7;border-radius:12px;background:#effcff;color:#3f6674}.toast{border:0;border-radius:12px;background:#1d2767}.toast>svg{color:#74e6f5}
+.public-passport{background:linear-gradient(180deg,#f2f4ff,#f4fdff)}.public-passport>header{border-bottom-color:#5564ae;background:linear-gradient(90deg,#111a45,#303ca0)}.garment-symbol{border:0;border-radius:16px;background:linear-gradient(145deg,#e8e3ff,#d9f7fb);color:#4938d1}.passport-disclaimer{border-color:#bce8ef;border-radius:12px;background:#eafaff;color:#356a77}
+@media(max-width:720px){.sidebar{border-bottom-color:#40519d}.nav-item.active{background:#e7fbff}.metric{box-shadow:0 6px 18px rgba(31,42,91,.07)}}
