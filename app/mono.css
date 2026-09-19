@@ -824,3 +824,20 @@ tbody tr:hover {
     background: #080808 !important;
   }
 }
+
+@media (max-width: 720px) {
+  .sidebar nav {display:grid;grid-template-columns:1fr 1fr;overflow:visible;gap:5px;}
+  .nav-item {white-space:normal;min-height:44px;}
+  .tabs {flex-wrap:wrap;overflow:visible;gap:10px 20px;}
+  .table-wrap {overflow:visible;}
+  .products-card table,.products-card tbody,.products-card tr,.products-card td {display:block;width:100%;white-space:normal;}
+  .products-card thead {display:none;}
+  .products-card tr {padding:16px 18px;border-top:1px solid #ddd;}
+  .products-card td {border:0;padding:6px 0;}
+  .products-card td:nth-child(2)::before {content:'Buyer: ';color:#666;}
+  .products-card td:nth-child(3)::before {content:'Readiness: ';color:#666;}
+  .products-card td:nth-child(4)::before {content:'Status: ';color:#666;}
+  .products-card .progress-label {display:inline-block;}
+  .products-card .progress {display:inline-block;margin-left:8px;}
+  .heading-actions {flex-wrap:wrap;}
+}

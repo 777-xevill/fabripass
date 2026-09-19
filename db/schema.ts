@@ -1,4 +1,6 @@
 import {sqliteTable,text,integer,uniqueIndex,index} from 'drizzle-orm/sqlite-core';
+export const demoEvents=sqliteTable('demo_events',{id:text('id').primaryKey(),session:text('session').notNull(),product:text('product').notNull(),checkpoint:text('checkpoint').notNull(),createdAt:text('created_at').notNull()},t=>[index('demo_events_session_time').on(t.session,t.createdAt)]);
+export const pilotInquiries=sqliteTable('pilot_inquiries',{id:text('id').primaryKey(),payload:text('payload').notNull(),createdAt:text('created_at').notNull()});
 export const workspaces=sqliteTable('workspaces',{owner:text('owner').primaryKey(),createdAt:text('created_at').notNull()});
 export const products=sqliteTable('products',{id:text('id').primaryKey(),owner:text('owner').notNull(),sku:text('sku').notNull(),batch:text('batch').notNull(),payload:text('payload').notNull(),version:integer('version').notNull(),updatedAt:text('updated_at').notNull()},t=>[uniqueIndex('products_owner_sku_batch').on(t.owner,t.sku,t.batch)]);
 export const evidence=sqliteTable('evidence',{id:text('id').primaryKey(),owner:text('owner').notNull(),productId:text('product_id').notNull(),payload:text('payload').notNull(),objectKey:text('object_key')},t=>[index('evidence_owner_product').on(t.owner,t.productId)]);
