@@ -21,6 +21,7 @@ export async function GET(){
    sku:product.sku,
    size:'Sample',
    color:'Product record',
+   imageUrl:product.imageUrl,
    workspace:true,
   }));
   return json({products});

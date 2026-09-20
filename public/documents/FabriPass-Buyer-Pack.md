@@ -1,9 +1,9 @@
-# LoomPass — Buyer & Pilot Pack
+# FabriPass — Buyer & Pilot Pack
 ## Every garment, a clearer story
 Prepared 19 September 2026. Working SaaS prototype and proposed commercial offer.
 
-## 1. Why LoomPass
-Garment information often lives across spreadsheets, supplier emails and separate document folders. LoomPass puts product identity, material composition, evidence and traceability references into a consistent record so factories can prepare clearer buyer responses.
+## 1. Why FabriPass
+Garment information often lives across spreadsheets, supplier emails and separate document folders. FabriPass puts product identity, material composition, evidence and traceability references into a consistent record so factories can prepare clearer buyer responses.
 
 For management: visibility of completeness and open issues.
 For merchandising: reusable style and batch information.
@@ -73,7 +73,7 @@ Pilot inquiries store supplied business contact details, company, role, message 
 ## 8. Production readiness and next step
 Agree customer tenancy, least-privilege access, document handling, security review, backup and restore, retention, offboarding, stable identifiers, publication rules, support and buyer acceptance.
 
-Confirm the product-specific legal requirements separately. LoomPass is not an EU conformity certificate and does not provide a registry integration.
+Confirm the product-specific legal requirements separately. FabriPass is not an EU conformity certificate and does not provide a registry integration.
 
 Next step: select a factory owner, 25 representative records, three suppliers and a participating buyer. Agree the pilot scope and acceptance measures.
 

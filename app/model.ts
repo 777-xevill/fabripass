@@ -1,4 +1,4 @@
-export type Product = { id:string; name:string; sku:string; batch:string; category:string; buyer:string; facility:string; country:string; quantity:number; materials:{name:string;percent:number}[]; stages:{stage:string;supplier:string;country:string}[]; care:string; circularity:string; notes:string; version:number; sample:boolean; updatedAt:string };
+export type Product = { id:string; name:string; sku:string; batch:string; category:string; buyer:string; facility:string; country:string; quantity:number; materials:{name:string;percent:number}[]; stages:{stage:string;supplier:string;country:string}[]; care:string; circularity:string; notes:string; imageUrl?:string; version:number; sample:boolean; updatedAt:string };
 export type Evidence = {id:string;productId:string;name:string;kind:string;expires:string;status:'pending'|'reviewed';reviewer?:string;reviewedVersion?:number;uploadedAt:string;sha256?:string;hasFile:boolean;sample:boolean};
 export type Activity = {id:string;message:string;createdAt:string};
 export const stageNames=['Fibre & yarn','Fabric formation','Dyeing & finishing','Garment making'];
@@ -21,4 +21,4 @@ export function checks(p:Product,docs:Evidence[]){return [
  {label:'Current evidence internally reviewed',ok:docs.some(e=>e.productId===p.id&&e.hasFile&&e.status==='reviewed'&&e.reviewedVersion===p.version&&!expired(e))}
  ]}
 export function readiness(p:Product,e:Evidence[]){return Math.round(checks(p,e).filter(c=>c.ok).length/8*100)}
-export function passportData(p:Product){return {schema:'loompass.preview.v1',notice:'DPP readiness preview. Not an EU-registered passport or certification.',sample:p.sample,productId:p.id,name:p.name,styleCode:p.sku,batch:p.batch,category:p.category,country:p.country,materials:p.materials,care:p.care,circularity:p.circularity,revision:p.version,updatedAt:p.updatedAt}}
+export function passportData(p:Product){return {schema:'fabripass.preview.v1',notice:'DPP readiness preview. Not an EU-registered passport or certification.',sample:p.sample,productId:p.id,name:p.name,styleCode:p.sku,batch:p.batch,category:p.category,country:p.country,materials:p.materials,care:p.care,circularity:p.circularity,imageUrl:p.imageUrl,revision:p.version,updatedAt:p.updatedAt}}

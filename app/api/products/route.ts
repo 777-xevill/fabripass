@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {db,identity,json,fail,HttpError,originCheck,jsonBody} from '../lib';
 import {stageNames,type Product,type Evidence} from '../../model';
 const str=(n=160)=>z.string().trim().max(n);
-const schema=z.object({id:str(200),name:str().min(1),sku:str(80).min(1),batch:str(80),category:z.enum(['Knitwear','Woven','Denim','Outerwear','Other']),buyer:str(),facility:str(),country:str(80),quantity:z.number().int().min(0).max(100000000),materials:z.array(z.object({name:str(80).min(1),percent:z.number().positive().max(100)})).min(1).max(12),stages:z.array(z.object({stage:str(80),supplier:str(),country:str(80)})).length(4),care:str(2000),circularity:str(2000),notes:str(2000),version:z.number().int().min(0)});
+const schema=z.object({id:str(200),name:str().min(1),sku:str(80).min(1),batch:str(80),category:z.enum(['Knitwear','Woven','Denim','Outerwear','Other']),buyer:str(),facility:str(),country:str(80),quantity:z.number().int().min(0).max(100000000),materials:z.array(z.object({name:str(80).min(1),percent:z.number().positive().max(100)})).min(1).max(12),stages:z.array(z.object({stage:str(80),supplier:str(),country:str(80)})).length(4),care:str(2000),circularity:str(2000),notes:str(2000),imageUrl:z.string().max(300).optional(),version:z.number().int().min(0)});
 export const dynamic='force-dynamic';
 export async function POST(req:Request){try{originCheck(req);const user=await identity();const parsed=schema.safeParse(await jsonBody(req));if(!parsed.success)throw new HttpError(400,'Check the product name, style code, quantities and material percentages.');const input=parsed.data;
  if(Math.abs(input.materials.reduce((s,m)=>s+m.percent,0)-100)>=0.01)throw new HttpError(400,'Material composition must total 100%.');

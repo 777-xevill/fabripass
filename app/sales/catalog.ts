@@ -1,4 +1,4 @@
-export type DemoGarment={id:string;name:string;category:string;batch:string;composition:string;weight:string;quantity:string;origin:string;care:string;sku:string;size:string;color:string;workspace?:boolean};
+export type DemoGarment={id:string;name:string;category:string;batch:string;composition:string;weight:string;quantity:string;origin:string;care:string;sku:string;size:string;color:string;imageUrl?:string;workspace?:boolean};
 export const garments:DemoGarment[]=[
  {id:'LP-TEE-001',name:'Everyday cotton tee',category:'KNITWEAR',batch:'BD-2609-01',composition:'100% cotton',weight:'180 GSM',quantity:'2,400 pieces',origin:'Gazipur, Bangladesh',care:'Wash at 30°C. Line dry. Repair small tears before reuse.',sku:'CT-2401',size:'M',color:'Natural white'},
  {id:'LP-DEN-002',name:'Utility denim shirt',category:'WOVEN / DENIM',batch:'BD-2609-02',composition:'98% cotton · 2% elastane',weight:'7.5 oz denim',quantity:'1,200 pieces',origin:'Narayanganj, Bangladesh',care:'Wash inside out with similar colours. Air dry. Repair seams to extend use.',sku:'DN-2402',size:'L',color:'Indigo'},
@@ -10,5 +10,5 @@ export const validSession=(s:string)=>/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89
 export const validDemoProduct=(id:string)=>garments.some(p=>p.id===id)||/^WSP-[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
 export function parseSharedGarment(raw:string|undefined,expectedId:string):DemoGarment|null{
  if(!raw||raw.length>6000)return null;
- try{const value=JSON.parse(raw) as Record<string,unknown>;const fields=['id','name','category','batch','composition','weight','quantity','origin','care','sku','size','color'];if(value.id!==expectedId||!validDemoProduct(expectedId)||fields.some(key=>typeof value[key]!=='string'||String(value[key]).length>600))return null;return {...value,workspace:true} as DemoGarment}catch{return null}
+ try{const value=JSON.parse(raw) as Record<string,unknown>;const fields=['id','name','category','batch','composition','weight','quantity','origin','care','sku','size','color'];if(value.id!==expectedId||!validDemoProduct(expectedId)||fields.some(key=>typeof value[key]!=='string'||String(value[key]).length>600))return null;if(value.imageUrl!==undefined&&(typeof value.imageUrl!=='string'||!/^\/api\/demo-image\/[0-9a-f-]{36}$/i.test(value.imageUrl)))return null;return {...value,workspace:true} as DemoGarment}catch{return null}
 }
