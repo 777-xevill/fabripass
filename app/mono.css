@@ -879,7 +879,7 @@ body,.app{background:#111713;color:var(--ink);font-family:Inter,"Helvetica Neue"
 ::selection{background:#b99a5b;color:#101713}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline-color:#b99a5b}
 .sidebar{width:238px;margin:12px 0 12px 12px;padding:26px 17px 18px;border:1px solid #31483e;border-radius:24px;background:linear-gradient(165deg,#101815 0,#17271f 55%,#0e1311 100%);box-shadow:0 24px 60px rgba(0,0,0,.32)}
-.brand{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:-.7px}.brand-icon{border:1px solid #ccb27d;border-radius:10px;background:#b99a5b;color:#111713}.brand-period{color:#ceb67f}
+.brand{font-family:Inter,"Helvetica Neue",Arial,sans-serif;font-size:28px;font-weight:850;letter-spacing:-.9px;line-height:1}.brand-icon{width:48px;height:48px;margin-right:12px;border:0;border-radius:0;background:transparent;color:#111713}.brand-period{color:#ceb67f}
 .company{border-color:#40574c;border-radius:14px;background:rgba(246,239,223,.06)}.company-avatar,.avatar{background:#713b3a;color:#fbf4e6}.nav-label{color:#a9a98f}
 .nav-item{border-radius:10px;color:#c9d0c7}.nav-item:hover{border-color:#4c6358;background:rgba(255,255,255,.06)}.nav-item.active{border-color:#ccb982;background:#eee7d8;color:#17231e;box-shadow:0 7px 20px rgba(0,0,0,.2)}
 .sidebar-footer{border-color:#34483f}.sidebar-footer small,.company small{color:#aeb8b0}
@@ -899,12 +899,12 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 
 /* FabriPass product workflow */
 .editor-dialog{position:fixed;inset:50% auto auto 50%;margin:0;transform:translate(-50%,-50%);overscroll-behavior:contain}
-.brand-image{overflow:hidden;padding:0;background:#f4efe4}.brand-image img{width:76px;height:76px;max-width:none;object-fit:cover;object-position:center}
+.brand-image{overflow:visible;padding:0;background:transparent}.brand-image img{display:block;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center}
 .product-icon{overflow:hidden}.product-icon img{width:100%;height:100%;object-fit:cover}
 .product-photo-field{display:block;margin:20px 0;color:#566c5c;font-size:14px}.product-photo-field>span{display:flex;justify-content:space-between;gap:10px}.product-photo-field>span small{color:#806a43;font-size:11px;text-transform:uppercase;letter-spacing:.7px}
 .product-photo-picker{display:grid;grid-template-columns:92px 1fr;align-items:center;gap:16px;margin-top:8px;padding:12px;border:1px dashed #aa9774;border-radius:13px;background:#eee6d7}.product-photo-picker>img,.product-photo-picker>svg{width:92px;height:82px;border-radius:10px;object-fit:cover;background:#ded6c7;color:#806a43;padding:4px}.product-photo-picker>svg{padding:22px}.product-photo-picker input{width:100%;font-size:13px}.product-photo-picker small{display:block;margin-top:8px;color:#6b716c;font-size:11px}
 .workspace-product-photo{position:relative;margin:20px 0 12px}.workspace-product-photo img{display:block;width:100%;height:260px;border:1px solid #c6b99d;border-radius:14px;object-fit:cover}.workspace-product-photo figcaption{position:absolute;right:10px;bottom:10px;padding:5px 9px;border-radius:999px;background:rgba(17,23,19,.82);color:#f6efdf;font-size:10px;letter-spacing:.7px;text-transform:uppercase}
-.passport-brand-mark{width:52px;height:52px;margin:0 auto;border-radius:12px;object-fit:cover}.passport-product-photo{width:120px;height:132px;margin:0 auto;border-radius:12px;object-fit:cover;box-shadow:0 10px 24px rgba(22,35,30,.15)}
+.passport-brand-link{display:inline-flex;align-self:center;border-radius:14px}.passport-brand-mark{display:block;width:64px;height:64px;margin:0 auto;object-fit:contain}.passport-product-photo{width:120px;height:132px;margin:0 auto;border-radius:12px;object-fit:cover;box-shadow:0 10px 24px rgba(22,35,30,.15)}
 @media(max-width:720px){.editor-dialog{width:calc(100% - 20px);max-height:94vh}.product-photo-picker{grid-template-columns:72px 1fr}.product-photo-picker>img,.product-photo-picker>svg{width:72px;height:68px}.workspace-product-photo img{height:210px}}
 
 .garment-symbol{overflow:hidden}.garment-symbol img{width:100%;height:100%;object-fit:cover}
