@@ -1,8 +1,10 @@
 import {bucket,HttpError,fail} from '../../lib';
+import {proxyPublicApiToSites} from '../../vercel-proxy';
 
 export const dynamic='force-dynamic';
 
-export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){
+export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){
+ const proxied=await proxyPublicApiToSites(request);if(proxied)return proxied;
  try{
   const {id}=await params;
   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id))throw new HttpError(404,'Image not found.');

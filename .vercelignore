@@ -1,0 +1,14 @@
+.git/
+.next/
+.vinext/
+.wrangler/
+.sites-runtime/
+.tools/
+.vercel/
+node_modules/
+dist/
+artifacts/
+examples/
+work/
+*.tsbuildinfo
+*.pem
