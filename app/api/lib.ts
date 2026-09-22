@@ -1,9 +1,9 @@
-import {env} from 'cloudflare:workers';
-import {getChatGPTUser} from '../chatgpt-auth';
+import {getStore,getBlobStore} from '../../db/store/client';
+import {getSessionUser} from '../auth';
 export class HttpError extends Error {constructor(public status:number,message:string){super(message)}}
-export function db(){if(!env.DB)throw new HttpError(503,'Storage is temporarily unavailable. Please retry.');return env.DB}
-export function bucket(){if(!env.BUCKET)throw new HttpError(503,'Document storage is temporarily unavailable. Please retry.');return env.BUCKET}
-export async function identity(){const user=await getChatGPTUser();if(!user)throw new HttpError(401,'Sign in to access your private workspace.');return user}
+export function db(){return getStore()}
+export function bucket(){return getBlobStore()}
+export async function identity(){const user=await getSessionUser();if(!user)throw new HttpError(401,'Sign in to access your private workspace.');return user}
 export function originCheck(req:Request){const origin=req.headers.get('origin');if(origin&&origin!==new URL(req.url).origin)throw new HttpError(403,'Cross-origin changes are not allowed.');if(req.headers.get('sec-fetch-site')==='cross-site')throw new HttpError(403,'Cross-site changes are not allowed.')}
 export function json(data:unknown,status=200){return Response.json(data,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}})}
 export function fail(e:unknown){if(e instanceof HttpError)return json({error:e.message},e.status);console.error('Workspace request failed',e instanceof Error?e.message:'Unknown storage error');return json({error:'The request could not be completed. Your input has been preserved; please retry.'},503)}

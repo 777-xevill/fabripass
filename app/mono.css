@@ -909,3 +909,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:720px){.editor-dialog{width:calc(100% - 20px);max-height:94vh}.product-photo-picker{grid-template-columns:72px 1fr}.product-photo-picker>img,.product-photo-picker>svg{width:72px;height:68px}.workspace-product-photo img{height:210px}}
 
 .garment-symbol{overflow:hidden}.garment-symbol img{width:100%;height:100%;object-fit:cover}
+
+/* Standalone sign-in / sign-up pages */
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,#f4f7ff,#fbfdff)}
+.auth-card{width:100%;max-width:400px;padding:34px 30px;border-radius:18px}
+.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:26px}
+.auth-brand img{width:34px;height:34px;object-fit:contain;border-radius:8px;border:1px solid #e5e7eb;background:#fff}
+.auth-brand span{font-size:20px;font-weight:800;letter-spacing:-.6px;color:#171717}
+.auth-card h1{margin:0 0 6px;font-size:24px}
+.auth-card>p{margin:0 0 22px;font-size:14px}
+.auth-card .block-label small{display:block;margin-top:6px;color:#9ca3af;font-size:11px}
+.auth-card .primary{width:100%;justify-content:center;margin-top:8px}
+.auth-foot{margin-top:20px;font-size:14px;color:#6b7280;text-align:center}
+.auth-foot a{color:#5521f1;font-weight:600}
+
+.avatar.light{border:0;padding:0}

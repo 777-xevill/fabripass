@@ -10,26 +10,6 @@ const nextConfig: NextConfig = {
     );
     return config;
   },
-  async rewrites() {
-    if (!process.env.VERCEL) return [];
-    return [
-      {
-        source: "/workspace/:path*",
-        destination:
-          "https://loompass-garment-readiness.iratul825.chatgpt.site/workspace/:path*",
-      },
-      {
-        source: "/signin-with-chatgpt",
-        destination:
-          "https://loompass-garment-readiness.iratul825.chatgpt.site/signin-with-chatgpt",
-      },
-      {
-        source: "/passport/:path*",
-        destination:
-          "https://loompass-garment-readiness.iratul825.chatgpt.site/passport/:path*",
-      },
-    ];
-  },
 };
 
 export default nextConfig;
