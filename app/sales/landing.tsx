@@ -8,11 +8,12 @@ const pilotStepLabels=['Company & registration','Your contact details','What you
 const [step,setStep]=useState(0);const lastStep=pilotStepLabels.length-1;
 const formRef=useRef<HTMLFormElement>(null);
 function activeFieldset(){return formRef.current?.querySelector<HTMLFieldSetElement>('.form-step.active')||null}
-function next(){const fs=activeFieldset();if(fs&&!fs.reportValidity())return;setStep(s=>Math.min(s+1,lastStep))}
+function stepValid(){const fs=activeFieldset();if(!fs)return true;const controls=Array.from(fs.querySelectorAll('input,select,textarea')) as (HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement)[];for(const el of controls){if(!el.reportValidity())return false}return true}
+function next(){if(!stepValid())return;setStep(s=>Math.min(s+1,lastStep))}
 function back(){setStep(s=>Math.max(s-1,0))}
 async function inquire(e:FormEvent<HTMLFormElement>){
 e.preventDefault();if(step<lastStep){next();return}
-const fs=activeFieldset();if(fs&&!fs.reportValidity())return;
+if(!stepValid())return;
 const form=e.currentTarget;setBusy(true);setState('');setFailed(false);
 try{const fd=new FormData(form);const payload={companyName:fd.get('companyName'),country:fd.get('country'),registrationNumber:fd.get('registrationNumber'),website:fd.get('website'),contactName:fd.get('contactName'),role:fd.get('role'),email:fd.get('email'),phone:fd.get('phone'),categories:fd.getAll('categories'),markets:fd.getAll('markets'),certifications:fd.getAll('certifications'),reference:fd.get('reference'),message:fd.get('message'),consent:fd.get('consent')};const r=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const out=await r.json() as {reference:string;error?:string};if(!r.ok)throw Error(out.error||'Unable to save. Please retry.');setState('Application saved. Reference '+out.reference+'. Keep this reference for your pilot discussion. No automatic email is sent by this prototype.');form.reset();setStep(0)}catch(e){setFailed(true);setState(e instanceof Error?e.message:'Unable to save. Please retry.')}finally{setBusy(false)}
 }
