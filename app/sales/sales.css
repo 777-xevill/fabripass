@@ -114,11 +114,18 @@
 
 @media(max-width:1050px){.exploded-hero{min-height:590px}.demo-passport-showcase{grid-template-columns:1fr;padding:25px}.demo-passport-showcase .demo-passport-copy{max-width:720px}.resources-hero{grid-template-columns:1fr}.resource-orbit{width:min(540px,100%);margin:auto}.resource-principles{grid-template-columns:1fr 1fr}.resource-timeline{grid-template-columns:1fr}.resource-timeline:before{top:10px;bottom:10px;left:23px;right:auto;width:1px;height:auto}.resource-timeline article{display:grid;grid-template-columns:48px 1fr;gap:15px}.resource-timeline h3{margin-top:4px}.resource-feature,.demo-guide{grid-template-columns:1fr}.resource-feature table{grid-column:auto}.data-boundary{grid-template-columns:1fr}}
 @media(max-width:760px){.sales-brand-art{width:46px;height:46px;flex-basis:46px}.sales-logo>span:last-child{font-size:23px}.exploded-hero{min-height:560px;box-shadow:9px 9px 0 #173027}.exploded-garment{inset:50px -22% 0;width:144%;height:89%}.sweatshirt-garment{inset:0;width:100%;height:100%;object-position:center}.garment-callout{font-size:8px}.callout-shell{top:28%;right:3%}.callout-lining{top:48%;left:3%}.callout-trims{bottom:25%;left:4%}.qr-magnifier{right:18px;bottom:20px}.sweatshirt-hero .qr-magnifier{right:6%;bottom:9%}.sweatshirt-hero .qr-magnifier:before{right:84px;bottom:126px;width:100px}.qr-magnifier .lens{width:104px;height:104px}.qr-magnifier img{width:72px;height:72px}.demo-passport-showcase{margin:30px -4px 55px;padding:18px;border-radius:17px}.demo-passport-showcase figcaption{position:static;display:block;margin-top:8px;background:none;text-align:center}.demo-control-intro{display:block}.resources-hero{padding:48px 20px}.resources-hero p{font-size:15px}.resource-orbit{min-height:310px}.orbit-core{width:110px;height:110px}.node-b{right:-2%}.resource-principles{grid-template-columns:1fr;padding:0 16px}.resources-page .doc-grid{padding:0 16px}.resources-page .doc-card{padding:24px}.resources-page .document-nav{position:static;padding:12px 16px}.resource-feature table{display:block;overflow-x:auto}.data-boundary{grid-template-columns:1fr}.resource-cta{grid-template-columns:1fr;padding:38px 20px}.demo-image-stage img{height:240px}}
-.form-section-label{font-size:10px;letter-spacing:1.6px;font-weight:700;color:#5521f1;margin:22px 0 2px;text-transform:uppercase}
-.form-section-label:first-of-type{margin-top:4px}
 .field-group{margin:0 0 16px}
 .field-legend{display:block;font-size:12px;font-weight:600;margin-bottom:8px}
 .checkbox-group{display:flex;flex-wrap:wrap;gap:8px}
 .checkbox-group label{display:inline-flex;align-items:center;gap:6px;width:auto;min-height:0;margin:0;padding:8px 12px;border:1px solid #d1d5db;border-radius:999px;background:#fff;font-size:12px;font-weight:500}
 .checkbox-group input{width:14px;min-height:14px;height:14px;margin:0}
-@media(prefers-reduced-motion:reduce){.exploded-garment,.qr-scan-point,.resource-orbit:before,.resource-orbit:after{animation:none}}
+.form-progress{display:flex;gap:6px;margin:20px 0 10px}
+.form-progress span{flex:1;height:4px;border-radius:2px;background:#e5e7eb}
+.form-progress span.done{background:#5521f1}
+.form-step-label{font-size:10px;letter-spacing:1.4px;font-weight:700;color:#5521f1;margin-bottom:16px;text-transform:uppercase}
+.form-step{display:none}
+.form-step.active{display:block;animation:step-in .2s ease}
+@keyframes step-in{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:none}}
+.form-nav{display:flex;gap:10px;margin-top:4px}
+.form-nav .sales-button{flex:1;min-height:48px}
+@media(prefers-reduced-motion:reduce){.exploded-garment,.qr-scan-point,.resource-orbit:before,.resource-orbit:after,.form-step.active{animation:none}}
