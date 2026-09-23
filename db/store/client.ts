@@ -1,9 +1,10 @@
-import { createClient, type Client } from "@libsql/client";
+import postgres from "postgres";
 
-// FabriPass standalone data store (libSQL / SQLite dialect) — replaces the
-// Cloudflare D1/R2 bindings that only exist on the OpenAI Sites platform.
-// DATABASE_URL unset -> local file, no account needed (dev default).
-// DATABASE_URL set -> any libSQL-compatible endpoint (e.g. Turso) for prod.
+// FabriPass data store: Postgres (Supabase). Keeps the D1-style
+// prepare().bind().first()/all()/run() + batch() shape the API routes use,
+// translating `?` placeholders to `$n`.
+const TABLES = ["users", "sessions", "workspaces", "products", "evidence", "activity", "blobs", "demo_events", "pilot_inquiries"];
+
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
@@ -34,6 +35,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS products_owner_sku_batch ON products(owner, sku, batch);
 CREATE TABLE IF NOT EXISTS evidence (
+  seq BIGINT GENERATED ALWAYS AS IDENTITY,
   id TEXT PRIMARY KEY,
   owner TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   product_id TEXT NOT NULL,
@@ -42,6 +44,7 @@ CREATE TABLE IF NOT EXISTS evidence (
 );
 CREATE INDEX IF NOT EXISTS evidence_owner_product ON evidence(owner, product_id);
 CREATE TABLE IF NOT EXISTS activity (
+  seq BIGINT GENERATED ALWAYS AS IDENTITY,
   id TEXT PRIMARY KEY,
   owner TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   message TEXT NOT NULL,
@@ -51,7 +54,7 @@ CREATE TABLE IF NOT EXISTS activity (
 CREATE INDEX IF NOT EXISTS activity_owner ON activity(owner);
 CREATE TABLE IF NOT EXISTS blobs (
   key TEXT PRIMARY KEY,
-  content BLOB NOT NULL,
+  content BYTEA NOT NULL,
   content_type TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
@@ -68,26 +71,51 @@ CREATE TABLE IF NOT EXISTS pilot_inquiries (
   payload TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+${TABLES.map((t) => `ALTER TABLE ${t} ENABLE ROW LEVEL SECURITY;`).join("\n")}
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    REVOKE ALL ON ${TABLES.join(", ")} FROM anon, authenticated;
+  END IF;
+END $$;
 `;
 
-let client: Client | null = null;
+// Supabase's pooled URL carries driver hints (e.g. supa=, pgbouncer=) that
+// postgres.js would forward as server startup parameters and get rejected.
+function connectionUrl(): string {
+  const raw = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+  if (!raw) throw new Error("POSTGRES_URL is not configured.");
+  const url = new URL(raw);
+  for (const key of [...url.searchParams.keys()]) {
+    if (key !== "sslmode") url.searchParams.delete(key);
+  }
+  return url.toString();
+}
+
+let sql: postgres.Sql | null = null;
 let ready: Promise<void> | null = null;
 
-function rawClient(): Client {
-  if (!client) {
-    const url = process.env.DATABASE_URL || "file:./db/store/local.db";
-    client = createClient({
-      url,
-      authToken: process.env.DATABASE_AUTH_TOKEN,
+function db(): postgres.Sql {
+  if (!sql) {
+    const url = connectionUrl();
+    const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url);
+    sql = postgres(url, {
+      prepare: false,
+      max: 3,
+      idle_timeout: 20,
+      ssl: local ? false : "require",
+      transform: { undefined: null },
     });
   }
-  return client;
+  return sql;
 }
 
 async function ensureSchema(): Promise<void> {
   if (!ready) {
-    ready = rawClient()
-      .executeMultiple(SCHEMA)
+    ready = db()
+      .begin(async (tx) => {
+        await tx`SELECT pg_advisory_xact_lock(724301)`;
+        await tx.unsafe(SCHEMA);
+      })
       .then(() => undefined)
       .catch((e) => {
         ready = null;
@@ -97,6 +125,12 @@ async function ensureSchema(): Promise<void> {
   return ready;
 }
 
+function toPg(query: string): string {
+  let n = 0;
+  return query.replace(/\?/g, () => `$${++n}`);
+}
+
+type Param = postgres.ParameterOrJSON<never>;
 export type Row = Record<string, unknown>;
 
 class BoundStatement {
@@ -104,20 +138,26 @@ class BoundStatement {
     public readonly sql: string,
     public readonly args: unknown[],
   ) {}
+  private async exec(runner: postgres.Sql | postgres.TransactionSql = db()) {
+    return runner.unsafe(toPg(this.sql), this.args as Param[]);
+  }
   async first<T = Row>(): Promise<T | null> {
     await ensureSchema();
-    const r = await rawClient().execute({ sql: this.sql, args: this.args as never[] });
-    return (r.rows[0] as unknown as T) ?? null;
+    const rows = await this.exec();
+    return (rows[0] as unknown as T) ?? null;
   }
   async all<T = Row>(): Promise<{ results: T[] }> {
     await ensureSchema();
-    const r = await rawClient().execute({ sql: this.sql, args: this.args as never[] });
-    return { results: r.rows as unknown as T[] };
+    const rows = await this.exec();
+    return { results: [...rows] as unknown as T[] };
   }
   async run(): Promise<{ success: true; meta: { changes: number } }> {
     await ensureSchema();
-    const r = await rawClient().execute({ sql: this.sql, args: this.args as never[] });
-    return { success: true, meta: { changes: r.rowsAffected ?? 0 } };
+    const rows = await this.exec();
+    return { success: true, meta: { changes: rows.count ?? 0 } };
+  }
+  runIn(tx: postgres.TransactionSql) {
+    return this.exec(tx);
   }
 }
 
@@ -130,26 +170,22 @@ class PreparedStatement {
 
 export interface Store {
   prepare(sql: string): PreparedStatement;
-  batch(
-    statements: BoundStatement[],
-  ): Promise<{ meta: { changes: number }; results: unknown[] }[]>;
+  batch(statements: BoundStatement[]): Promise<{ meta: { changes: number }; results: unknown[] }[]>;
 }
 
 export function getStore(): Store {
   return {
-    prepare(sql: string) {
-      return new PreparedStatement(sql);
+    prepare(query: string) {
+      return new PreparedStatement(query);
     },
     async batch(statements: BoundStatement[]) {
       await ensureSchema();
-      const results = await rawClient().batch(
-        statements.map((s) => ({ sql: s.sql, args: s.args as never[] })),
-        "write",
-      );
-      return results.map((r) => ({
-        meta: { changes: r.rowsAffected ?? 0 },
-        results: r.rows,
-      }));
+      const results = await db().begin(async (tx) => {
+        const out = [];
+        for (const s of statements) out.push(await s.runIn(tx));
+        return out;
+      });
+      return results.map((r) => ({ meta: { changes: r.count ?? 0 }, results: [...r] }));
     },
   };
 }
@@ -160,11 +196,7 @@ export interface BlobObject {
 }
 
 export interface BlobStore {
-  put(
-    key: string,
-    content: Uint8Array,
-    options?: { httpMetadata?: { contentType?: string } },
-  ): Promise<void>;
+  put(key: string, content: Uint8Array, options?: { httpMetadata?: { contentType?: string } }): Promise<void>;
   get(key: string): Promise<BlobObject | null>;
   delete(key: string): Promise<void>;
 }
@@ -173,25 +205,15 @@ export function getBlobStore(): BlobStore {
   return {
     async put(key, content, options) {
       await ensureSchema();
-      await rawClient().execute({
-        sql: "INSERT INTO blobs(key,content,content_type,created_at) VALUES(?,?,?,?) ON CONFLICT(key) DO UPDATE SET content=excluded.content,content_type=excluded.content_type,created_at=excluded.created_at",
-        args: [
-          key,
-          content,
-          options?.httpMetadata?.contentType || "application/octet-stream",
-          new Date().toISOString(),
-        ] as never[],
-      });
+      const type = options?.httpMetadata?.contentType || "application/octet-stream";
+      await db()`INSERT INTO blobs(key,content,content_type,created_at) VALUES(${key},${Buffer.from(content)},${type},${new Date().toISOString()})
+        ON CONFLICT(key) DO UPDATE SET content=excluded.content,content_type=excluded.content_type,created_at=excluded.created_at`;
     },
     async get(key) {
       await ensureSchema();
-      const r = await rawClient().execute({
-        sql: "SELECT content,content_type FROM blobs WHERE key=?",
-        args: [key] as never[],
-      });
-      const row = r.rows[0] as unknown as { content: Uint8Array; content_type: string } | undefined;
+      const [row] = await db()<{ content: Buffer; content_type: string }[]>`SELECT content,content_type FROM blobs WHERE key=${key}`;
       if (!row) return null;
-      const bytes = Buffer.isBuffer(row.content) ? row.content : Buffer.from(row.content);
+      const bytes = row.content;
       return {
         body: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
         httpMetadata: { contentType: row.content_type },
@@ -199,7 +221,7 @@ export function getBlobStore(): BlobStore {
     },
     async delete(key) {
       await ensureSchema();
-      await rawClient().execute({ sql: "DELETE FROM blobs WHERE key=?", args: [key] as never[] });
+      await db()`DELETE FROM blobs WHERE key=${key}`;
     },
   };
 }

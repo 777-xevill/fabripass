@@ -59,7 +59,7 @@ export async function getSessionUser(): Promise<AuthUser | null> {
   const store = getStore();
   const row = await store
     .prepare(
-      `SELECT users.id AS id, users.email AS email, users.display_name AS displayName
+      `SELECT users.id AS id, users.email AS email, users.display_name AS "displayName"
        FROM sessions JOIN users ON users.id = sessions.user_id
        WHERE sessions.token_hash=? AND sessions.expires_at > ?`,
     )

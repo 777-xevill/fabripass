@@ -922,5 +922,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .auth-card .primary{width:100%;justify-content:center;margin-top:8px}
 .auth-foot{margin-top:20px;font-size:14px;color:#6b7280;text-align:center}
 .auth-foot a{color:#5521f1;font-weight:600}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0 14px;color:#9ca3af;font-size:12px}
+.auth-divider:before,.auth-divider:after{content:"";flex:1;height:1px;background:#e5e7eb}
+.auth-card .auth-demo{width:100%;justify-content:center}
+.auth-demo-note{margin:8px 0 0;font-size:12px;text-align:center}
 
 .avatar.light{border:0;padding:0}
