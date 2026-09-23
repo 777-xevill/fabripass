@@ -15,9 +15,10 @@ const schema=z.object({
   markets:z.array(z.enum(['EU','UK','US & Canada','Other'])).optional().default([]),
   certifications:z.array(z.enum(['BSCI','WRAP','SEDEX / SMETA','ISO 9001','OEKO-TEX','GOTS','None yet'])).optional().default([]),
   reference:str(200).optional().default(''),
-  message:str(1500).min(1),
+  traceTopics:z.array(z.enum(['Material composition & fibre origin','Supply chain / factory journey','Dyeing & chemical treatment','Certifications & compliance evidence','Care & end-of-life guidance','Something else'])).optional().default([]),
+  message:str(1500).optional().default(''),
   consent:z.literal('yes'),
-});
+}).refine(v=>v.traceTopics.length>0||v.message.length>0,{message:'Select at least one trace topic, or describe it in your own words.',path:['message']});
 
 export async function POST(req:Request){
   try{

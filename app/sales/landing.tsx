@@ -12,6 +12,9 @@ function stepValid(){
 const fs=activeFieldset();if(!fs)return true;
 const categoryBoxes=Array.from(fs.querySelectorAll('input[name="categories"]')) as HTMLInputElement[];
 if(categoryBoxes.length)categoryBoxes[0].setCustomValidity(categoryBoxes.some(b=>b.checked)?'':'Select at least one product category.');
+const traceBoxes=Array.from(fs.querySelectorAll('input[name="traceTopics"]')) as HTMLInputElement[];
+const messageEl=fs.querySelector('textarea[name="message"]') as HTMLTextAreaElement|null;
+if(traceBoxes.length&&messageEl)messageEl.setCustomValidity(traceBoxes.some(b=>b.checked)||messageEl.value.trim()?'':'Select at least one option above, or describe it in the box.');
 const controls=Array.from(fs.querySelectorAll('input,select,textarea')) as (HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement)[];
 for(const el of controls){if(!el.reportValidity())return false}
 return true
@@ -22,11 +25,12 @@ async function inquire(e:FormEvent<HTMLFormElement>){
 e.preventDefault();if(step<lastStep){next();return}
 if(!stepValid())return;
 const form=e.currentTarget;setBusy(true);setState('');setFailed(false);
-try{const fd=new FormData(form);const payload={companyName:fd.get('companyName'),country:fd.get('country'),registrationNumber:fd.get('registrationNumber'),website:fd.get('website'),contactName:fd.get('contactName'),role:fd.get('role'),email:fd.get('email'),phone:fd.get('phone'),categories:fd.getAll('categories'),markets:fd.getAll('markets'),certifications:fd.getAll('certifications'),reference:fd.get('reference'),message:fd.get('message'),consent:fd.get('consent')};const r=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const out=await r.json() as {reference:string;error?:string};if(!r.ok)throw Error(out.error||'Unable to save. Please retry.');setState('Application saved. Reference '+out.reference+'. Keep this reference for your pilot discussion. No automatic email is sent by this prototype.');form.reset();setStep(0)}catch(e){setFailed(true);setState(e instanceof Error?e.message:'Unable to save. Please retry.')}finally{setBusy(false)}
+try{const fd=new FormData(form);const payload={companyName:fd.get('companyName'),country:fd.get('country'),registrationNumber:fd.get('registrationNumber'),website:fd.get('website'),contactName:fd.get('contactName'),role:fd.get('role'),email:fd.get('email'),phone:fd.get('phone'),categories:fd.getAll('categories'),markets:fd.getAll('markets'),certifications:fd.getAll('certifications'),reference:fd.get('reference'),traceTopics:fd.getAll('traceTopics'),message:fd.get('message'),consent:fd.get('consent')};const r=await fetch('/api/inquiries',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const out=await r.json() as {reference:string;error?:string};if(!r.ok)throw Error(out.error||'Unable to save. Please retry.');setState('Application saved. Reference '+out.reference+'. Keep this reference for your pilot discussion. No automatic email is sent by this prototype.');form.reset();setStep(0)}catch(e){setFailed(true);setState(e instanceof Error?e.message:'Unable to save. Please retry.')}finally{setBusy(false)}
 }
 const pilotCategories=['Knitwear','Woven','Denim','Outerwear','Other'];
 const pilotMarkets=['EU','UK','US & Canada','Other'];
 const pilotCertifications=['BSCI','WRAP','SEDEX / SMETA','ISO 9001','OEKO-TEX','GOTS','None yet'];
+const pilotTraceTopics=['Material composition & fibre origin','Supply chain / factory journey','Dyeing & chemical treatment','Certifications & compliance evidence','Care & end-of-life guidance','Something else'];
 return <div className="sales"><a className="skip-link" href="#main">Skip to content</a><SalesHeader/><main id="main">
 <section className="sales-hero"><div><div className="sales-kicker">FABRIPASS / GARMENT INTELLIGENCE, FROM SOURCE TO SCAN</div><h1>See every layer.<br/>Trace every handover.<br/><em>Share one clear record.</em></h1><p className="sales-lede">Turn scattered factory information into a product story buyers can inspect. Connect construction, materials, evidence and checkpoints to a QR for every garment record.</p><div className="sales-actions"><a className="sales-button dark" href="/demo">Try scan & track <ArrowUpRight size={18}/></a><a className="sales-button" href="/resources">Explore buyer resources <ArrowRight size={18}/></a></div><p className="sales-micro">For garment factories, sourcing teams and brands.</p></div><div className="exploded-hero sweatshirt-hero" aria-label="Plain sweatshirt with a scannable product passport QR inside the neckline"><img className="exploded-garment sweatshirt-garment" src="/visuals/fabripass-sweatshirt-qr.png" alt="Plain off-white sweatshirt with a small FabriPass QR printed inside the neckline"/><a className="qr-magnifier" href="/demo" aria-label="Scan the sweatshirt neck QR and open the FabriPass live demo"><span className="lens"><img src="/brand/fabripass-demo-qr.png" alt="Magnified sample product QR"/><Search size={41}/></span><strong>Scan the neck QR</strong><small>Open the product passport</small></a></div></section>
 <div className="audience-strip"><span>DESIGNED FOR THE PEOPLE BEHIND THE GARMENT</span><strong>Factory owners</strong><strong>Merchandisers</strong><strong>Compliance teams</strong><strong>Global buyers</strong></div>
@@ -63,7 +67,8 @@ return <div className="sales"><a className="skip-link" href="#main">Skip to cont
 </fieldset>
 
 <fieldset className={'form-step'+(step===4?' active':'')}>
-<label>What would you like to trace?<textarea name="message" required maxLength={1500} rows={3}/></label>
+<div className="field-group"><span className="field-legend">What would you like to trace? <small>Select any that apply</small></span><div className="checkbox-group">{pilotTraceTopics.map(t=><label key={t}><input type="checkbox" name="traceTopics" value={t}/>{t}</label>)}</div></div>
+<label>Anything else to add?<textarea name="message" maxLength={1500} rows={3} placeholder="Optional — describe it in your own words"/></label>
 <label className="consent"><input type="checkbox" name="consent" value="yes" required/>I agree to the <a href="/resources#privacy">inquiry data use</a>.</label>
 </fieldset>
 
