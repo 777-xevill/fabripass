@@ -8,7 +8,14 @@ const pilotStepLabels=['Company & registration','Your contact details','What you
 const [step,setStep]=useState(0);const lastStep=pilotStepLabels.length-1;
 const formRef=useRef<HTMLFormElement>(null);
 function activeFieldset(){return formRef.current?.querySelector<HTMLFieldSetElement>('.form-step.active')||null}
-function stepValid(){const fs=activeFieldset();if(!fs)return true;const controls=Array.from(fs.querySelectorAll('input,select,textarea')) as (HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement)[];for(const el of controls){if(!el.reportValidity())return false}return true}
+function stepValid(){
+const fs=activeFieldset();if(!fs)return true;
+const categoryBoxes=Array.from(fs.querySelectorAll('input[name="categories"]')) as HTMLInputElement[];
+if(categoryBoxes.length)categoryBoxes[0].setCustomValidity(categoryBoxes.some(b=>b.checked)?'':'Select at least one product category.');
+const controls=Array.from(fs.querySelectorAll('input,select,textarea')) as (HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement)[];
+for(const el of controls){if(!el.reportValidity())return false}
+return true
+}
 function next(){if(!stepValid())return;setStep(s=>Math.min(s+1,lastStep))}
 function back(){setStep(s=>Math.max(s-1,0))}
 async function inquire(e:FormEvent<HTMLFormElement>){
@@ -46,7 +53,7 @@ return <div className="sales"><a className="skip-link" href="#main">Skip to cont
 </fieldset>
 
 <fieldset className={'form-step'+(step===2?' active':'')}>
-<div className="field-group"><span className="field-legend">Product categories</span><div className="checkbox-group">{pilotCategories.map(c=><label key={c}><input type="checkbox" name="categories" value={c}/>{c}</label>)}</div></div>
+<div className="field-group"><span className="field-legend">Product categories <small>Select at least one</small></span><div className="checkbox-group">{pilotCategories.map(c=><label key={c}><input type="checkbox" name="categories" value={c}/>{c}</label>)}</div></div>
 <div className="field-group"><span className="field-legend">Primary export markets</span><div className="checkbox-group">{pilotMarkets.map(m=><label key={m}><input type="checkbox" name="markets" value={m}/>{m}</label>)}</div></div>
 </fieldset>
 
