@@ -55,6 +55,19 @@ CREATE TABLE IF NOT EXISTS blobs (
   content_type TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS demo_events (
+  id TEXT PRIMARY KEY,
+  session TEXT NOT NULL,
+  product TEXT NOT NULL,
+  checkpoint TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS demo_events_session_time ON demo_events(session, created_at);
+CREATE TABLE IF NOT EXISTS pilot_inquiries (
+  id TEXT PRIMARY KEY,
+  payload TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
 `;
 
 let client: Client | null = null;
@@ -101,6 +114,11 @@ class BoundStatement {
     const r = await rawClient().execute({ sql: this.sql, args: this.args as never[] });
     return { results: r.rows as unknown as T[] };
   }
+  async run(): Promise<{ success: true; meta: { changes: number } }> {
+    await ensureSchema();
+    const r = await rawClient().execute({ sql: this.sql, args: this.args as never[] });
+    return { success: true, meta: { changes: r.rowsAffected ?? 0 } };
+  }
 }
 
 class PreparedStatement {
@@ -137,7 +155,7 @@ export function getStore(): Store {
 }
 
 export interface BlobObject {
-  body: Uint8Array;
+  body: ArrayBuffer;
   httpMetadata?: { contentType?: string };
 }
 
@@ -173,8 +191,9 @@ export function getBlobStore(): BlobStore {
       });
       const row = r.rows[0] as unknown as { content: Uint8Array; content_type: string } | undefined;
       if (!row) return null;
+      const bytes = Buffer.isBuffer(row.content) ? row.content : Buffer.from(row.content);
       return {
-        body: row.content instanceof Uint8Array ? row.content : new Uint8Array(row.content as ArrayBuffer),
+        body: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer,
         httpMetadata: { contentType: row.content_type },
       };
     },
