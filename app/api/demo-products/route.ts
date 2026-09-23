@@ -1,12 +1,10 @@
 import {db,identity,json,fail} from '../lib';
 import type {Product} from '../../model';
 import type {DemoGarment} from '../../sales/catalog';
-import {proxyPublicApiToSites} from '../vercel-proxy';
 
 export const dynamic='force-dynamic';
 
-export async function GET(request:Request){
- const proxied=await proxyPublicApiToSites(request);if(proxied)return proxied;
+export async function GET(){
  try{
   const user=await identity();
   const rows=await db().prepare('SELECT payload FROM products WHERE owner=? ORDER BY updated_at DESC').bind(user.userId).all<{payload:string}>();

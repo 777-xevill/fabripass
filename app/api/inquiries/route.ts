@@ -1,6 +1,5 @@
 import {z} from 'zod';
 import {db,json,fail,HttpError,originCheck,jsonBody} from '../lib';
-import {proxyPublicApiToSites} from '../vercel-proxy';
 
 const str=(n:number)=>z.string().trim().max(n);
 const schema=z.object({
@@ -21,7 +20,6 @@ const schema=z.object({
 });
 
 export async function POST(req:Request){
-  const proxied=await proxyPublicApiToSites(req);if(proxied)return proxied;
   try{
     originCheck(req);
     const parsed=schema.safeParse(await jsonBody(req));
